@@ -2,14 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/calendar_assignment_model.dart';
-import 'package:flutter_tutorial/course_card.dart';
-import 'package:flutter_tutorial/user_model.dart';
+import 'package:flutter_tutorial/data/models/calendar_assignment_model.dart';
+import 'package:flutter_tutorial/widgets/course_card.dart';
+import 'package:flutter_tutorial/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-import './courses_model.dart';
+import '../data/models/courses_model.dart';
 
 class CoursesOverview extends StatefulWidget {
   @override
@@ -118,24 +117,31 @@ class _CoursesOverviewState extends State<CoursesOverview> {
       future: _courses,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Container(
+          return
+            Column(
+              children: <Widget>[
+                Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.only(bottom: 20),
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, id) {
                         CanvasCourse course = snapshot.data[id];
-
-                        return CourseCard(course, getCalendarAssignments(course.id));
+                        return CourseCard(
+                            course: course,
+                            assignmentsFuture: getCalendarAssignments(course.id),
+                        );
                       },
-                    ));
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              // By default, show a loading spinner.
-              return Center(
-                  child: CircularProgressIndicator());
-            },
+                    ),
+                ),
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          // By default, show a loading spinner.
+          return Center(
+              child: CircularProgressIndicator());
+        },
     );
   }
 }

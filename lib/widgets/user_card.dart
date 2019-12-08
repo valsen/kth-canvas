@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './user_model.dart';
+import '../data/models/user_model.dart';
 
 class UserCard extends StatelessWidget {
   final CanvasUser user;
