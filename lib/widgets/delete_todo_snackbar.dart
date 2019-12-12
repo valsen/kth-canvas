@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../todo_db_item.dart';
+import '../data/models/models.dart';
 
 class DeleteTodoSnackBar extends SnackBar {
 //  final ArchSampleLocalizations localizations;

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../data/models/app_tab.dart';
+import 'package:flutter_tutorial/data/models/models.dart';
 
 abstract class TabEvent extends Equatable {
   const TabEvent();

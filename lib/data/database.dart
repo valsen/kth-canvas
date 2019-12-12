@@ -1,9 +1,7 @@
-import 'package:flutter_tutorial/data/models/calendar_assignment_db_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../todo_db_item.dart';
-import 'models/calendar_assignment_db_model.dart';
+import 'package:flutter_tutorial/data/models/models.dart';
 
 class DBProvider {
   DBProvider._();
@@ -19,15 +17,19 @@ class DBProvider {
   }
 
   initDB() async {
-   DBProvider.db.deleteLocalDatabase();
+    // await DBProvider.db.deleteLocalDatabase();
     print("initializing Database");
     var documentsDirectory = await getDatabasesPath();
     String path = join(documentsDirectory, "todo.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT, type TEXT, start_at TEXT, course_id INTEGER, active INTEGER)");
-          await db.execute("CREATE TABLE assignments(id STRING PRIMARY KEY)");
-        });
+      await db.execute(
+          "CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT, type TEXT, start_at TEXT, course_id INTEGER, active INTEGER)");
+      await db.execute(
+          "CREATE TABLE courses(id INTEGER PRIMARY KEY, name TEXT, course_code TEXT, color TEXT)");
+      await db.execute(
+          "CREATE TABLE custom_colors(id TEXT PRIMARY KEY, color TEXT)");
+    });
   }
 
   Future<void> resetTodos() async {
@@ -70,45 +72,54 @@ class DBProvider {
     );
   }
 
-  // Future<void> undoHideTodoItem(Todo todo) async {
-  //   final Database db = await database;
-  //   await db.insert(
-  //     "todos",
-  //     todo.toMap(),
-  //     conflictAlgorithm: ConflictAlgorithm.replace,
-  //   );
-  // }
-
   Future<Todo> getTodo(dynamic id) async {
     final Database db = await database;
     var res = await db.query("todos", where: "id = ?", whereArgs: [id]);
     return res.isNotEmpty ? Todo.fromLocalMap(res.first) : null;
   }
 
-
   Future<List<Todo>> getAllTodos() async {
     final db = await database;
     var res = await db.query("todos");
     List<Todo> list =
-    res.isNotEmpty ? res.map((c) => Todo.fromLocalMap(c)).toList() : [];
+        res.isNotEmpty ? res.map((c) => Todo.fromLocalMap(c)).toList() : [];
     return list;
   }
 
-  Future<void> insertAssignment(DBAssignment assignment) async {
-    final Database db = await database;
+  Future<void> updateCourse(CanvasCourse course) async {
+    final db = await database;
     await db.insert(
-      'assignments',
-      assignment.toMap(),
+      "courses",
+      course.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<DBAssignment> getAssignment(String id) async {
-    final Database db = await database;
-    var res = await db.query("assignments", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? DBAssignment.fromMap(res.first) : null;
+  Future<List<CanvasCourse>> getAllCourses() async {
+    final db = await database;
+    var res = await db.query("courses");
+    List<CanvasCourse> list =
+        res.isNotEmpty ? res.map((c) => CanvasCourse.fromLocalMap(c)).toList() : [];
+    return list;
   }
 
+  Future<void> insertCourses(List<CanvasCourse> courses) async {
+    final Database db = await database;
+    for (CanvasCourse course in courses) {
+      await db.insert(
+        "courses",
+        course.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
 
+  Future<List<CustomColor>> getCustomColors() async {
+    final Database db = await database;
+    var res = await db.query("custom_colors");
+    List<CustomColor> customColors = res.isNotEmpty 
+      ? CustomColors.fromMap(res.map((c) => CustomColor(id: c["id"], color: c["color"])))
+      : [];
+    return customColors;
+  }
 }
-

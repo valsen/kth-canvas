@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_tutorial/data/models/visibility_filter.dart';
 
-import '../../todo_db_item.dart';
+import 'package:flutter_tutorial/data/models/models.dart';
 
 abstract class FilteredTodosState extends Equatable {
   const FilteredTodosState();

@@ -1,11 +1,6 @@
-import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-
-
-import 'todo.dart';
-import '../../todo_db_item.dart';
+import 'package:flutter_tutorial/data/models/models.dart';
 
 @immutable
 abstract class TodoEvent extends Equatable {
@@ -15,9 +10,9 @@ abstract class TodoEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetActiveTodos extends TodoEvent {}
+class GetLocalTodos extends TodoEvent {}
 
-class GetInactiveTodos extends TodoEvent {}
+class GetActiveTodos extends TodoEvent {}
 
 class ResetTodoList extends TodoEvent {}
 

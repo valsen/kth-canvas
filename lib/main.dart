@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/todo/todo_bloc.dart';
-import 'data/canvas_repository.dart';
 
 import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/data/canvas_repository.dart';
 import 'package:flutter_tutorial/screens/home_screen.dart';
 
 void main() {
@@ -12,7 +11,9 @@ void main() {
   runApp(
     BlocProvider(
       create: (context) {
-        return TodosBloc(TodoRepository())..add(GetActiveTodos());
+        return TodosBloc(TodoRepository())
+          ..add(GetLocalTodos())
+          ..add(GetActiveTodos());
       },
       child: CanvasApp(),
     ),

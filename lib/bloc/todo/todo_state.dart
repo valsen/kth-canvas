@@ -1,11 +1,7 @@
-import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-import 'todo.dart';
-import '../../todo_db_item.dart';
-import '../../data/models/courses_model.dart';
+import 'package:flutter_tutorial/data/models/models.dart';
 
 @immutable
 abstract class TodoState extends Equatable {
