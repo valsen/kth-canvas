@@ -20,9 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.12.0+2
-  intl: ^0.16.0
-  flutter_bloc: ^1.0.0
-  equatable: ^0.6.1
+  intl: ^0.15.4
+  flutter_bloc: ^2.0.0
+  equatable: ^1.0.0
   sqflite:
 
   # The following adds the Cupertino Icons font to your application.
@@ -32,6 +32,23 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  todos_app_core:
+    git:
+      url: https://github.com/felangel/flutter_architecture_samples
+      path: todos_app_core
+      ref: expose-repositories
+  todos_repository_core:
+    git:
+      url: https://github.com/felangel/flutter_architecture_samples
+      path: todos_repository_core
+      ref: expose-repositories
+  todos_repository_simple:
+    git:
+      url: https://github.com/felangel/flutter_architecture_samples
+      path: todos_repository_simple
+      ref: expose-repositories
 
 
 # For information on the generic Dart part of this file, see the

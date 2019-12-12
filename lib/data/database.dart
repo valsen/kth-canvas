@@ -19,42 +19,78 @@ class DBProvider {
   }
 
   initDB() async {
-    print("init Database");
+   DBProvider.db.deleteLocalDatabase();
+    print("initializing Database");
     var documentsDirectory = await getDatabasesPath();
     String path = join(documentsDirectory, "todo.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT)");
-          await db.execute("CREATE TABLE assignments(id TEXT PRIMARY KEY)");
+          await db.execute("CREATE TABLE todos(id INTEGER PRIMARY KEY, title TEXT, type TEXT, start_at TEXT, course_id INTEGER, active INTEGER)");
+          await db.execute("CREATE TABLE assignments(id STRING PRIMARY KEY)");
         });
   }
 
-  resetDatabase() async {
+  Future<void> resetTodos() async {
+    print("resetting todos");
+    final Database db = await database;
+    await db.execute("DELETE FROM todos");
+  }
+
+  Future<void> resetAssignments() async {
+    print("resetting assignments");
+    final Database db = await database;
+    await db.execute("DELETE FROM assignments");
+  }
+
+  Future<void> deleteLocalDatabase() async {
+    print("deleting database");
     var documentsDirectory = await getDatabasesPath();
     String path = join(documentsDirectory, "todo.db");
     await deleteDatabase(path);
   }
 
-  Future<void> hideTodoItem(Todo todo) async {
+  Future<void> insertTodoItems(List<Todo> todos) async {
     final Database db = await database;
+    for (Todo todo in todos) {
+      await db.insert(
+        "todos",
+        todo.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  Future<void> updateTodoItem(Todo todo) async {
+    final Database db = await database;
+    print(todo.toMap());
     await db.insert(
-      'todos',
+      "todos",
       todo.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<Todo> getTodo(int id) async {
+  // Future<void> undoHideTodoItem(Todo todo) async {
+  //   final Database db = await database;
+  //   await db.insert(
+  //     "todos",
+  //     todo.toMap(),
+  //     conflictAlgorithm: ConflictAlgorithm.replace,
+  //   );
+  // }
+
+  Future<Todo> getTodo(dynamic id) async {
     final Database db = await database;
     var res = await db.query("todos", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? Todo.fromMap(res.first) : null;
+    return res.isNotEmpty ? Todo.fromLocalMap(res.first) : null;
   }
+
 
   Future<List<Todo>> getAllTodos() async {
     final db = await database;
     var res = await db.query("todos");
     List<Todo> list =
-    res.isNotEmpty ? res.map((c) => Todo.fromMap(c)).toList() : [];
+    res.isNotEmpty ? res.map((c) => Todo.fromLocalMap(c)).toList() : [];
     return list;
   }
 

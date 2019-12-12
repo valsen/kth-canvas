@@ -1,23 +1,30 @@
-part of 'todo_bloc.dart';
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+
+
+import 'todo.dart';
+import '../../todo_db_item.dart';
 
 @immutable
 abstract class TodoEvent extends Equatable {
   const TodoEvent();
-}
-
-class GetTodoList extends TodoEvent {
-  final List<Object> hiddenItems;
-
-  const GetTodoList(this.hiddenItems);
 
   @override
-  List<Object> get props => [hiddenItems];
+  List<Object> get props => [];
 }
 
-class HideTodoItem extends TodoEvent {
+class GetActiveTodos extends TodoEvent {}
+
+class GetInactiveTodos extends TodoEvent {}
+
+class ResetTodoList extends TodoEvent {}
+
+class UpdateTodo extends TodoEvent {
   final Todo todoItem;
 
-  const HideTodoItem(this.todoItem);
+  const UpdateTodo(this.todoItem);
 
   @override
   List<Object> get props => [todoItem];

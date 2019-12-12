@@ -349,11 +349,11 @@ final submissionTypeValues = EnumValues({
   "online_upload": SubmissionType.ONLINE_UPLOAD
 });
 
-enum WorkflowState { PUBLISHED }
+// enum WorkflowState { PUBLISHED }
 
-final workflowStateValues = EnumValues({
-  "published": WorkflowState.PUBLISHED
-});
+// final workflowStateValues = EnumValues({
+//   "published": WorkflowState.PUBLISHED
+// });
 
 enum ContextCode { COURSE_16720 }
 

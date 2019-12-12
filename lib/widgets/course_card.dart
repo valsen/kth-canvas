@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_tutorial/bloc/todo/todo.dart';
+import 'package:flutter_tutorial/widgets/delete_todo_snackbar.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tutorial/bloc/todo/todo_bloc.dart';
 
 import '../data/models/courses_model.dart';
-import '../data/models/calendar_assignment_model.dart';
-import '../data/database.dart';
-import '../data/models/calendar_assignment_db_model.dart';
+import '../time_format.dart';
+import '../todo_db_item.dart';
 
-class CourseCard extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tutorial/data/models/visibility_filter.dart';
+import 'package:todos_app_core/todos_app_core.dart';
+import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/widgets/widgets.dart';
+// import 'package:flutter_tutorial/screens/screens.dart';
+import 'package:flutter_tutorial/flutter_todos_keys.dart';
+
+import '../todo_db_item.dart';
+import 'package:flutter_tutorial/widgets/delete_todo_snackbar.dart';
+import 'package:intl/intl.dart';
+import '../time_format.dart';
+
+class CourseCard extends StatelessWidget {
   final CanvasCourse course;
-  final Future<List<CalendarAssignment>> assignmentsFuture;
+  final List<Todo> assignments;
 
-  CourseCard({Key key, this.course, this.assignmentsFuture}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _CourseCardState();
+  CourseCard({this.course, this.assignments}) {
+    TimeFormat.load("sv_SE");
   }
-}
 
-class _CourseCardState extends State<CourseCard> {
   final Map<String, Color> courseColor = {
     "Hållut": Colors.green,
     "ProSam åk3": Colors.pink,
@@ -31,17 +44,10 @@ class _CourseCardState extends State<CourseCard> {
   };
 
   final locale = "sv_SE";
-  DateFormat timeFormat;
-
-  _CourseCardState() {
-    initializeDateFormatting(locale).then((_) {
-      timeFormat = DateFormat.MEd(locale).add_Hm();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+      return Card(
       margin: EdgeInsets.only(left: 10, right: 10, top: 15),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -49,115 +55,106 @@ class _CourseCardState extends State<CourseCard> {
           // course info
           CourseHeader(),
           // list of assignments
-          FutureBuilder<List<CalendarAssignment>>(
-              future: widget.assignmentsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Column(children: <Widget>[
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, id) {
-                          CalendarAssignment assignment = snapshot.data[id];
-                          if (assignment.assignment.dueAt?.isAfter(DateTime.now()) &&
-                              !assignment.assignment.userSubmitted) {
-                            var divider;
-                            if (id < snapshot.data.length - 1) {
-                              divider = new Divider(
-                                indent: 10,
-                                endIndent: 10,
-                                height: 1,
-                              );
-                            } else {
-                              divider = new Container();
-                            }
-                            Future<bool> hidden = DBProvider.db
-                                .getAssignment(assignment.id)
-                                .then((res) {
-                              if (res != null) {
-                                print("HIDDEN");
-                                return true;
-                              }
-                              return false;
-                            });
-                            return FutureBuilder<bool>(
-                              future: hidden,
-                              builder: (ctx, snap) {
-                                if (snap.hasData) {
-                                  if (!snap.data) {
-                                    return Column(children: [
-                                      DismissableCourse(snapshot, id),
-                                      divider,
-                                    ]);
-                                  } else
-                                    return Container();
-                                } else if (snapshot.hasError) {
-                                  return Text('${snapshot.error}');
-                                } else {
-                                  return Center(child: CircularProgressIndicator());
-                                }
-                              },
-                            );
-                          } else {
-                            return Container();
-                          }
-                        })
-                  ]);
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.toString());
-                }
-                // By default, show a loading spinner.
-                return Container();
-              }),
+          Column(
+            children: <Widget>[
+              ListView.builder(
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemCount: assignments.length,
+                  itemBuilder: (context, id) {
+                    Todo assignment = assignments[id];
+                    var divider;
+                    if (id < assignments.length - 1) {
+                      divider = new Divider(
+                        indent: 10,
+                        endIndent: 10,
+                        height: 1,
+                      );
+                    } else {
+                      divider = new Container();
+                    }
+                    final VisibilityFilter activeFilter = 
+                      (BlocProvider.of<FilteredTodosBloc>(context).state as FilteredTodosLoaded).activeFilter;
+                    return
+                      DismissableCourse(
+                        assignment,
+                        (direction) {
+                          BlocProvider.of<TodosBloc>(context).add(
+                            UpdateTodo(assignment.copyWith(
+                              active: activeFilter == VisibilityFilter.active ? false : true
+                            )));
+                          Scaffold.of(context).showSnackBar(
+                            DeleteTodoSnackBar(
+                                todo: assignment,
+                                onUndo: () => BlocProvider.of<TodosBloc>(context)
+                                    .add(UpdateTodo(assignment.copyWith(
+                                      active: activeFilter == VisibilityFilter.active ? true : false
+                                    ))),
+                                key: Key(assignment.id.toString())),
+                          );
+                        },
+                      );
+//                      divider,
+//                    ]);
+                  })
+            ],
+          ),
+        ],
+      ),
+    );
+    }
+
+  Widget CourseHeader() {
+    return Container(
+      color: courseColor[course.name] ?? Colors.blueGrey,
+      child: ListTile(
+        title: Text(
+          course.name,
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white),
+        ),
+        subtitle: Text(course.courseCode,
+            style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white)),
+        trailing: Icon(Icons.keyboard_arrow_right),
+        onTap: () {},
+      ),
+    );
+  }
+  Widget SwipeBackground() {
+    return Container(
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(right: 20),
+            child: Text("Dölj",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16)),
+          ),
         ],
       ),
     );
   }
+  Widget DismissableCourse(assignment, onDismissed) {
+//  final DismissDirectionCallback onDismissed;
+//  final Todo assignment;
 
-  Widget CourseHeader() {
-    return
-      Container(
-        color: courseColor[widget.course.name] ?? Colors.blueGrey,
-        child: ListTile(
-          title: Text(
-            widget.course.name,
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w300,
-                color: Colors.white),
-          ),
-          subtitle: Text(widget.course.courseCode,
-              style: TextStyle(
-                  fontWeight: FontWeight.w200, color: Colors.white)),
-          trailing: Icon(Icons.keyboard_arrow_right),
-          onTap: () {},
-        ),
-      );
-  }
+//  DismissableCourse({this.onDismissed, this.assignment});
 
-  Widget DismissableCourse(snapshot, id) {
-    CalendarAssignment assignment = snapshot.data[id];
+
     return Dismissible(
       direction: DismissDirection.endToStart,
       key: Key(
-          assignment.id.toString(),
+        assignment.id.toString(),
       ),
-      onDismissed: (direction) {
-        setState(() {
-          snapshot.data.removeAt(id);
-        });
-        DBProvider.db.insertAssignment(
-            DBAssignment.fromMap(
-                {"id": assignment.id}));
-        Scaffold.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    "tog bort element från listan")));
-      },
+      onDismissed: onDismissed,
       background: SwipeBackground(),
       child: ListTile(
-        leading: Icon(Icons.assignment),
+        leading: Icon(
+            assignment.type == "assignment" ? Icons.assignment : Icons.event),
         title: Text(
           assignment.title,
           style: TextStyle(
@@ -165,32 +162,13 @@ class _CourseCardState extends State<CourseCard> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: assignment.assignment.dueAt != null
-            ? Text(timeFormat.format(assignment.assignment.dueAt.toLocal()))
+        subtitle: assignment.startAt != null
+            ? Text(DateFormat.MMMEd("sv_SE")
+            .add_Hm()
+            .format(assignment.startAt.toLocal()))
             : "",
       ),
     );
   }
-
-  Widget SwipeBackground() {
-    return Container(
-      color: Colors.red,
-      child: Row(
-        mainAxisAlignment:
-        MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-            margin:
-            EdgeInsets.only(right: 20),
-            child: Text("Dölj",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight:
-                    FontWeight.w500,
-                    fontSize: 16)),
-          ),
-        ],
-      ),
-    );
-  }
 }
+

@@ -17,8 +17,8 @@ class UpcomingEvent {
   bool allDay;
   DateTime allDayDate;
   dynamic id;
-  Type type;
-  Assignment assignment;
+  String type;
+  UpcomingAssignment assignment;
   String htmlUrl;
   String contextCode;
   DateTime endAt;
@@ -61,6 +61,12 @@ class UpcomingEvent {
     this.duplicates,
   });
 
+  @override
+  List<Object> get props => [
+    id,
+    title,
+  ];
+
   factory UpcomingEvent.fromJson(Map<String, dynamic> json) => UpcomingEvent(
     title: json["title"],
     description: json["description"] == null ? null : json["description"],
@@ -70,8 +76,8 @@ class UpcomingEvent {
     allDay: json["all_day"],
     allDayDate: json["all_day_date"] == null ? null : DateTime.parse(json["all_day_date"]),
     id: json["id"],
-    type: typeValues.map[json["type"]],
-    assignment: json["assignment"] == null ? null : Assignment.fromJson(json["assignment"]),
+    type: json["type"],
+    assignment: json["assignment"] == null ? null : UpcomingAssignment.fromJson(json["assignment"]),
     htmlUrl: json["html_url"],
     contextCode: json["context_code"],
     endAt: DateTime.parse(json["end_at"]),
@@ -97,7 +103,7 @@ class UpcomingEvent {
     "all_day": allDay,
     "all_day_date": allDayDate == null ? null : "${allDayDate.year.toString().padLeft(4, '0')}-${allDayDate.month.toString().padLeft(2, '0')}-${allDayDate.day.toString().padLeft(2, '0')}",
     "id": id,
-    "type": typeValues.reverse[type],
+    "type": type,
     "assignment": assignment == null ? null : assignment.toJson(),
     "html_url": htmlUrl,
     "context_code": contextCode,
@@ -117,7 +123,7 @@ class UpcomingEvent {
 }
 
 
-class Assignment {
+class UpcomingAssignment {
   int id;
   String description;
   DateTime dueAt;
@@ -171,7 +177,7 @@ class Assignment {
   bool anonymizeStudents;
   List<String> allowedExtensions;
 
-  Assignment({
+  UpcomingAssignment({
     this.id,
     this.description,
     this.dueAt,
@@ -226,7 +232,7 @@ class Assignment {
     this.allowedExtensions,
   });
 
-  factory Assignment.fromJson(Map<String, dynamic> json) => Assignment(
+  factory UpcomingAssignment.fromJson(Map<String, dynamic> json) => UpcomingAssignment(
     id: json["id"],
     description: json["description"],
     dueAt: DateTime.parse(json["due_at"]),
@@ -339,23 +345,23 @@ class Assignment {
 
 enum WorkflowState { PUBLISHED, ACTIVE }
 
-final workflowStateValues = EnumValues({
+final workflowStateValues = UpcomingEnumValues({
   "active": WorkflowState.ACTIVE,
   "published": WorkflowState.PUBLISHED
 });
 
-enum Type { ASSIGNMENT, EVENT }
+//enum Type { ASSIGNMENT, EVENT }
+//
+//final typeValues = EnumValues({
+//  "assignment": Type.ASSIGNMENT,
+//  "event": Type.EVENT
+//});
 
-final typeValues = EnumValues({
-  "assignment": Type.ASSIGNMENT,
-  "event": Type.EVENT
-});
-
-class EnumValues<T> {
+class UpcomingEnumValues<T> {
   Map<String, T> map;
   Map<T, String> reverseMap;
 
-  EnumValues(this.map);
+  UpcomingEnumValues(this.map);
 
   Map<T, String> get reverse {
     if (reverseMap == null) {

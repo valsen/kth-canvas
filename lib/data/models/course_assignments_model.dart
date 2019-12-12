@@ -4,11 +4,11 @@
 
 import 'dart:convert';
 
-List<Assignment> assignmentsFromJson(String str) => List<Assignment>.from(json.decode(str).map((x) => Assignment.fromJson(x)));
+List<CourseAssignment> assignmentsFromJson(String str) => List<CourseAssignment>.from(json.decode(str).map((x) => CourseAssignment.fromJson(x)));
 
-String assignmentToJson(List<Assignment> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String assignmentToJson(List<CourseAssignment> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Assignment {
+class CourseAssignment {
   int id;
 //  String description;
   DateTime dueAt;
@@ -61,7 +61,7 @@ class Assignment {
   String submissionsDownloadUrl;
   bool anonymizeStudents;
 
-  Assignment({
+  CourseAssignment({
     this.id,
 //    this.description,
     this.dueAt,
@@ -115,10 +115,10 @@ class Assignment {
     this.anonymizeStudents,
   });
 
-  factory Assignment.fromJson(Map<String, dynamic> json) => Assignment(
+  factory CourseAssignment.fromJson(Map<String, dynamic> json) => CourseAssignment(
     id: json["id"],
 //    description: json["description"],
-    dueAt: DateTime.parse(json["due_at"]),
+    dueAt: json["due_at"] == null ? null : DateTime.parse(json["due_at"]),
     unlockAt: json["unlock_at"],
     lockAt: json["lock_at"],
     pointsPossible: json["points_possible"],

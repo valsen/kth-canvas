@@ -1,0 +1,1 @@
+enum VisibilityFilter { inactive, active }
