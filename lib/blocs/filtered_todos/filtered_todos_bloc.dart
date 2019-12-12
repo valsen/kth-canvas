@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/blocs/blocs.dart';
 import 'package:flutter_tutorial/data/models/models.dart';
 
 

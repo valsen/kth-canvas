@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 
-import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/blocs/blocs.dart';
 import 'package:flutter_tutorial/data/models/models.dart';
 
 class FilterButton extends StatelessWidget {

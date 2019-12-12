@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_tutorial/widgets/widgets.dart';
-import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/blocs/blocs.dart';
 import 'package:flutter_tutorial/data/models/models.dart';
 
 class HomeScreen extends StatelessWidget {

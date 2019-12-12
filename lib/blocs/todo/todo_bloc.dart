@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_tutorial/data/models/models.dart';
 import 'package:flutter_tutorial/data/canvas_repository.dart';
 import 'package:flutter_tutorial/data/database.dart';
-import 'package:flutter_tutorial/bloc/blocs.dart';
+import 'package:flutter_tutorial/blocs/blocs.dart';
 
 class TodosBloc extends Bloc<TodoEvent, TodoState> {
   final CanvasRepository canvasRepository;
