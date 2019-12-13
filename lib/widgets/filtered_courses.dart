@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -25,7 +26,47 @@ class FilteredCourses extends StatelessWidget {
           final courseList =
               (BlocProvider.of<TodosBloc>(context).state as TodosLoaded)
                   .courseList;
-          return Column(
+          return CustomScrollView(
+            semanticChildCount: courseList.length,
+            slivers: <Widget>[
+              CupertinoSliverNavigationBar(
+                largeTitle: Text('Kurser'),
+                trailing: CupertinoSwitch(
+                  
+                  value: state.activeFilter == VisibilityFilter.active ? true : false,
+                  onChanged: (_) => BlocProvider.of<FilteredTodosBloc>(context).add(
+                    UpdateFilter(state.activeFilter == VisibilityFilter.active
+                      ? VisibilityFilter.inactive 
+                      : VisibilityFilter.active)),
+                ),
+              ),
+              SliverSafeArea(      // BEGINNING OF NEW CONTENT
+               top: false,
+               minimum: const EdgeInsets.only(top: 8),
+               sliver: SliverList(
+                 delegate: SliverChildBuilderDelegate(
+                   (context, index) {
+                     if (index < courseList.length) {
+                       CanvasCourse course = courseList[index];
+                       return CourseCard(
+                          // index: index,
+                          course: course,
+                          assignments: todoList
+                            .where((todo) => todo.courseId == course.id)
+                            .toList(),
+                        //  lastItem: index == todoList.length - 1,
+                       );
+                     }
+                     return null;
+                   },
+                 ),
+               ),
+             )
+            ],
+          );
+          
+          
+          Column(
             children: <Widget>[
               Expanded(
                 child: ListView.builder(

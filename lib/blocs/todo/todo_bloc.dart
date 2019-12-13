@@ -32,11 +32,12 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
 
   Stream<TodoState> _mapGetLocalTodosToState() async* {
     try {
-      final List<Todo> localItems = await DBProvider.db.getAllTodos();
+      List<Todo> todos = await DBProvider.db.getAllTodos();
       final List<CanvasCourse> courseList = await DBProvider.db.getAllCourses();
+      todos = todos.where((todo) => todo.startAt.isAfter(DateTime.now())).toList();
       courseList.sort((a,b) => a.name.compareTo(b.name));
 
-      yield TodosLoaded(localItems, courseList);
+      yield TodosLoaded(todos, courseList);
     } catch (err) {
       yield TodosLoading();
     }
@@ -44,8 +45,7 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
 
   Stream<TodoState> _mapLoadTodosToState() async* {
     try {
-      final List<UpcomingEvent> todoListResponse =
-          await canvasRepository.fetchTodoList();
+      final List<UpcomingEvent> todoListResponse = await canvasRepository.fetchTodoList();
       Iterable<Todo> todoList = todoListResponse
           .map((upcoming) => Todo.fromUpcomingMap(
                 {
