@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tutorial/blocs/blocs.dart';
 import 'package:flutter_tutorial/data/canvas_repository.dart';
 import 'package:flutter_tutorial/screens/home_screen.dart';
+import 'package:flutter_tutorial/screens/add_edit_screen.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -41,6 +42,17 @@ class CanvasApp extends StatelessWidget {
             child: HomeScreen(),
           );
         },
+        'addTodo': (context) {
+          return AddEditScreen(
+            // key: ArchSampleKeys.addTodoScreen,
+            onSave: (todo) {
+              BlocProvider.of<TodosBloc>(context).add(
+                AddTodo(todo),
+              );
+            },
+            isEditing: false,
+          );
+        }
       },
     );
   }

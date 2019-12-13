@@ -19,6 +19,13 @@ class HomeScreen extends StatelessWidget {
           ),
           backgroundColor: Color.fromRGBO(255, 255, 255, 0.9),
           body: activeTab == AppTab.courses ? FilteredCourses() : FilteredTodos(),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              print("PUSHED");
+              Navigator.pushNamed(context, 'addTodo');
+            },
+          ),
           bottomNavigationBar: TabSelector(
             activeTab: activeTab,
             onTabSelected: (tab) =>

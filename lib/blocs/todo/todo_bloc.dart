@@ -21,6 +21,8 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
       yield* _mapGetLocalTodosToState();
     } else if (event is GetActiveTodos) {
       yield* _mapLoadTodosToState();
+    } else if(event is AddTodo) {
+      yield* _mapAddTodoToState(event);
     } else if (event is UpdateTodo) {
       yield* _mapHideTodoToState(event);
     } else if (event is ResetTodoList) {
@@ -33,11 +35,6 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
       final List<Todo> localItems = await DBProvider.db.getAllTodos();
       final List<CanvasCourse> courseList = await DBProvider.db.getAllCourses();
       courseList.sort((a,b) => a.name.compareTo(b.name));
-
-      // for (var course in courseList) {
-      //   print('\n');
-      //   print(course.toMap());
-      // }
 
       yield TodosLoaded(localItems, courseList);
     } catch (err) {
@@ -92,13 +89,6 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
     }
   }
 
-  // Stream<TodoState> _mapLoadInactiveTodosToState() async* {
-  //   List<Todo> localItems = await DBProvider.db.getAllTodos();
-  //   final inactiveItems = localItems.where((todo) => !todo.active);
-
-  //   yield TodosLoaded(inactiveItems, (state as TodosLoaded).courseList);
-  // }
-
   Stream<TodoState> _mapHideTodoToState(UpdateTodo event) async* {
     if (state is TodosLoaded) {
       final List<Todo> updatedTodos =
@@ -110,16 +100,17 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
     }
   }
 
-  // Stream<TodoState> _mapUndoHideTodoToState(UndoHideTodo event) async* {
-  //   if (state is TodosLoaded) {
-  //     final List<Todo> updatedTodoList = List.from((state as TodosLoaded)
-  //         .todoList)
-  //       ..add(event.todoItem)
-  //       ..sort((a, b) => a.startAt.compareTo(b.startAt));
-  //     yield TodosLoaded(updatedTodoList, (state as TodosLoaded).courseList);
-  //     canvasRepository.updateTodoItem(event.todoItem);
-  //   }
-  // }
+  Stream<TodoState> _mapAddTodoToState(AddTodo event) async* {
+    print("UTANFOR");
+    if (state is TodosLoaded) {
+      print("INNANFOR");
+      final List<Todo> updatedTodos =
+          (state as TodosLoaded).todoList..add(event.todoItem);
+
+      yield TodosLoaded(updatedTodos, (state as TodosLoaded).courseList);
+      DBProvider.db.updateTodoItem(event.todoItem);
+    }
+  }
 
   Stream<TodoState> _mapResetTodosToState() async* {
     if (state is TodosLoaded) {

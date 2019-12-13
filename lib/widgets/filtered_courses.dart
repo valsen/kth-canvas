@@ -53,13 +53,15 @@ class FilteredCourses extends StatelessWidget {
 }
 
 Widget DaysLeft(DateTime date) {
-  int diffDays = date.difference(DateTime.now()).inDays + 1;
+  var then = DateTime(date.year, date.month, date.day);
+  var now = DateTime.now();
+  int diffDays = then.difference(DateTime(now.year, now.month, now.day)).inDays;
   int diffHours = date.difference(DateTime.now()).inHours + 1;
   int diffMinutes = date.difference(DateTime.now()).inMinutes + 1;
   Color color;
   if (diffDays <= 1) {
     color = Colors.red;
-  } else if (diffDays < 4) {
+  } else if (diffDays <= 3) {
     color = Colors.orange;
   } else {
     color = Colors.green;
@@ -67,8 +69,8 @@ Widget DaysLeft(DateTime date) {
   return Text(
       diffHours <= 1
           ? diffMinutes.toString() + "m"
-          : diffDays <= 1
-              ? diffHours.toString() + 'h'
+          : diffHours < 24
+              ? "<" + diffHours.toString() + 'h'
               : diffDays.toString() + "d",
       style:
           TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w400));

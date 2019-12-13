@@ -16,6 +16,15 @@ class GetActiveTodos extends TodoEvent {}
 
 class ResetTodoList extends TodoEvent {}
 
+class AddTodo extends TodoEvent {
+  final Todo todoItem;
+
+  const AddTodo(this.todoItem);
+
+  @override
+  List<Object> get props => [todoItem];
+}
+
 class UpdateTodo extends TodoEvent {
   final Todo todoItem;
 
