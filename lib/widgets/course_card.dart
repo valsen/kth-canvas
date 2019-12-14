@@ -21,17 +21,23 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final VisibilityFilter activeFilter =
+      (BlocProvider.of<FilteredTodosBloc>(context).state
+              as FilteredTodosLoaded)
+          .activeFilter;
+
     return Card(
       margin: EdgeInsets.only(left: 10, right: 10, top: 15),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // course info
-          CourseHeader(),
+          courseHeader(),
           // list of assignments
           Column(
             children: <Widget>[
               ListView.builder(
+                padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),
                   itemCount: assignments.length,
@@ -47,15 +53,9 @@ class CourseCard extends StatelessWidget {
                     } else {
                       divider = new Container();
                     }
-                    final VisibilityFilter activeFilter =
-                        (BlocProvider.of<FilteredTodosBloc>(context).state
-                                as FilteredTodosLoaded)
-                            .activeFilter;
                     return Column(
                       children: <Widget>[
-                        DismissableCourse(
-                          assignment,
-                          (direction) {
+                        dismissableCourse(context, assignment, (direction) {
                             BlocProvider.of<TodosBloc>(context).add(UpdateTodo(
                                 assignment.copyWith(
                                     active: activeFilter == VisibilityFilter.active
@@ -85,7 +85,7 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  Widget CourseHeader() {
+  Widget courseHeader() {
     return Container(
       height: 45,
       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -109,56 +109,23 @@ class CourseCard extends StatelessWidget {
           ),
         ],
       ),
-      // child: ListTile(
-      //   title: Text(
-      //     course.name,
-      //     style: TextStyle(
-      //         fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white),
-      //   ),
-      //   subtitle: Text(course.courseCode,
-      //       style: TextStyle(fontWeight: FontWeight.w200, color: Colors.white)),
-      //   trailing: Icon(Icons.keyboard_arrow_right),
-      //   onTap: () {},
-      // ),
     );
   }
 
-  Widget SwipeBackground() {
-    return Container(
-      color: Colors.red,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(right: 20),
-            child: Text("Dölj",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget DismissableCourse(assignment, onDismissed) {
+  Widget dismissableCourse(context, assignment, onDismissed) {
     return Dismissible(
       direction: DismissDirection.endToStart,
       key: Key(
         assignment.id.toString(),
       ),
       onDismissed: onDismissed,
-      background: SwipeBackground(),
+      background: swipeBackground(),
       child: ListTile(
         leading: Icon(
             assignment.type == "assignment" ? Icons.assignment : Icons.event),
         title: Text(
           assignment.title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(context).textTheme.body1
         ),
         subtitle: assignment.startAt != null
             ? Text(DateFormat.MMMEd("sv_SE")

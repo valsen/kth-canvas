@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.add_circled),
-                // title: Text('Kurser'),
+                title: Text('Lägg till'),
               ),
               BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.time),
@@ -50,6 +50,12 @@ class HomeScreen extends StatelessWidget {
                       child: FilteredTodos()
                     );
                   });
+                default:
+                  return CupertinoTabView(builder: (context) {
+                  return CupertinoPageScaffold(
+                    child: FilteredCourses()
+                  );
+                });
             }
           // navigationBar: CupertinoNavigationBar(
           //   middle: const Text("Canvas"),

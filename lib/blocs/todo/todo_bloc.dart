@@ -32,12 +32,12 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
 
   Stream<TodoState> _mapGetLocalTodosToState() async* {
     try {
-      List<Todo> todos = await DBProvider.db.getAllTodos();
+      List<Todo> localItems = await DBProvider.db.getAllTodos();
       final List<CanvasCourse> courseList = await DBProvider.db.getAllCourses();
-      todos = todos.where((todo) => todo.startAt.isAfter(DateTime.now())).toList();
+      localItems.removeWhere((todo) => todo.startAt.isBefore(DateTime.now()));
       courseList.sort((a,b) => a.name.compareTo(b.name));
 
-      yield TodosLoaded(todos, courseList);
+      yield TodosLoaded(localItems, courseList);
     } catch (err) {
       yield TodosLoading();
     }
@@ -45,7 +45,8 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
 
   Stream<TodoState> _mapLoadTodosToState() async* {
     try {
-      final List<UpcomingEvent> todoListResponse = await canvasRepository.fetchTodoList();
+      final List<UpcomingEvent> todoListResponse =
+          await canvasRepository.fetchTodoList();
       Iterable<Todo> todoList = todoListResponse
           .map((upcoming) => Todo.fromUpcomingMap(
                 {
@@ -57,7 +58,8 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
                 },
               ))
           .toList();
-
+        
+          
       final List<CanvasCourse> courseList = await canvasRepository.fetchCourses();
       courseList.sort((a,b) => a.name.compareTo(b.name));
 
@@ -104,8 +106,10 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
     print("UTANFOR");
     if (state is TodosLoaded) {
       print("INNANFOR");
-      final List<Todo> updatedTodos =
-          (state as TodosLoaded).todoList..add(event.todoItem);
+      final List<Todo> updatedTodos = (state as TodosLoaded).todoList;
+      print(updatedTodos.length);
+      updatedTodos.add(event.todoItem);
+      print(updatedTodos.length);
 
       yield TodosLoaded(updatedTodos, (state as TodosLoaded).courseList);
       DBProvider.db.updateTodoItem(event.todoItem);
