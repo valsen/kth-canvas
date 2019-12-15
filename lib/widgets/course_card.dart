@@ -55,7 +55,7 @@ class CourseCard extends StatelessWidget {
                     }
                     return Column(
                       children: <Widget>[
-                        dismissableCourse(context, assignment, (direction) {
+                        dismissableCourse(context, activeFilter, assignment, (direction) {
                             BlocProvider.of<TodosBloc>(context).add(UpdateTodo(
                                 assignment.copyWith(
                                     active: activeFilter == VisibilityFilter.active
@@ -112,14 +112,14 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  Widget dismissableCourse(context, assignment, onDismissed) {
+  Widget dismissableCourse(context, activeFilter, assignment, onDismissed) {
     return Dismissible(
       direction: DismissDirection.endToStart,
       key: Key(
         assignment.id.toString(),
       ),
       onDismissed: onDismissed,
-      background: swipeBackground(),
+      background: swipeBackground(activeFilter),
       child: ListTile(
         leading: Icon(
             assignment.type == "assignment" ? Icons.assignment : Icons.event),

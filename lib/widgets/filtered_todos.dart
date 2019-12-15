@@ -76,7 +76,7 @@ class FilteredTodos extends StatelessWidget {
                        return 
                        Dismissible(
                          direction: DismissDirection.endToStart,
-                         background: swipeBackground(),
+                         background: swipeBackground(activeFilter),
                          key: Key(todo.id.toString()),
                          onDismissed: (direction) {
                            BlocProvider.of<TodosBloc>(context).add(UpdateTodo(

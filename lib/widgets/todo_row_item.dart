@@ -64,22 +64,21 @@ class TodoRowItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              activeFilter == VisibilityFilter.active
-                ? Icon(todo.type == "event" ? Icons.event : Icons.assignment, color: Colors.grey)
-                : CupertinoButton(
-                  minSize: 5,
-                  // color: Colors.green,
-                    padding: EdgeInsets.zero,
-                    child: Text('Markera aktiv', style: TextStyle(fontSize: 18)),
-                    onPressed: () {
-                      if (activeFilter == VisibilityFilter.inactive) {
-                        BlocProvider.of<TodosBloc>(context).add(UpdateTodo(todo.copyWith(
-                          active: activeFilter == VisibilityFilter.active
-                            ? false
-                            : true)));
-                      }
-                    },
-                ),
+              Icon(todo.type == "event" ? Icons.event : Icons.assignment, color: Colors.grey),
+                // : CupertinoButton(
+                //   minSize: 5,
+                //   // color: Colors.green,
+                //     padding: EdgeInsets.zero,
+                //     child: Text('Markera aktiv', style: TextStyle(fontSize: 18)),
+                //     onPressed: () {
+                //       if (activeFilter == VisibilityFilter.inactive) {
+                //         BlocProvider.of<TodosBloc>(context).add(UpdateTodo(todo.copyWith(
+                //           active: activeFilter == VisibilityFilter.active
+                //             ? false
+                //             : true)));
+                //       }
+                //     },
+                // ),
               daysLeft(todo.startAt),
             ]),
           ],
