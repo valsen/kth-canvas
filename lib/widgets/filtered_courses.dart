@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tutorial/screens/add_edit_screen.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 
 import 'package:flutter_tutorial/blocs/blocs.dart';
@@ -16,24 +17,30 @@ class FilteredCourses extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<FilteredTodosBloc, FilteredTodosState>(
       builder: (context, state) {
-        if (state is FilteredTodosLoading) {
-          return Center(
-              child:
-                  CircularProgressIndicator(key: ArchSampleKeys.todosLoading));
-        } else if (state is FilteredTodosLoaded) {
-          final todoList = state.filteredTodos;
+          final todoList = (state as FilteredTodosLoaded).filteredTodos;
           final courseList =
               (BlocProvider.of<TodosBloc>(context).state as TodosLoaded)
                   .courseList;
-          return CustomScrollView(
+          return Container(
+            decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white,
+                        Colors.indigo.shade50])),
+
+          child: CustomScrollView(
             semanticChildCount: courseList.length,
             slivers: <Widget>[
               CupertinoSliverNavigationBar(
                 largeTitle: Text('Kurser'),
                 trailing:
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+                      children: <Widget>[
                   CupertinoSegmentedControl(
-                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(left: 15, top: 5, bottom: 5),
                     borderColor: Colors.blueGrey,
                     selectedColor: Colors.blueGrey,
                     children: {
@@ -57,12 +64,29 @@ class FilteredCourses extends StatelessWidget {
                               : VisibilityFilter.inactive));
                     },
                   ),
+                  CupertinoButton(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Icon(CupertinoIcons.add),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
+                        builder: (context) {
+                          return AddEditScreen(
+                            onSave: (todo) {
+                              BlocProvider.of<TodosBloc>(context).add(
+                                AddTodo(todo),
+                              );
+                            },
+                            isEditing: false,
+                          );
+                        },
+                      ));
+                    }
+                      )
                 ]),
               ),
               SliverSafeArea(
                 // BEGINNING OF NEW CONTENT
                 top: false,
-                //  minimum: const EdgeInsets.only(top: 8),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -74,7 +98,6 @@ class FilteredCourses extends StatelessWidget {
                           assignments: todoList
                               .where((todo) => todo.courseId == course.id)
                               .toList(),
-                          //  lastItem: index == todoList.length - 1,
                         );
                       }
                       return null;
@@ -83,10 +106,8 @@ class FilteredCourses extends StatelessWidget {
                 ),
               )
             ],
-          );
-        }
-      },
-    );
+          ));
+      });
   }
 }
 

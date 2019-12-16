@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tutorial/screens/add_edit_screen.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 
 import 'package:flutter_tutorial/data/models/models.dart';
@@ -39,9 +40,11 @@ class FilteredTodos extends StatelessWidget {
             slivers: <Widget>[
               CupertinoSliverNavigationBar(
                 largeTitle: Text('Kommande'),
-                trailing: Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                trailing: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+                      children: <Widget>[
                   CupertinoSegmentedControl(
-                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(left: 15, top: 5, bottom: 5),
                     borderColor: Colors.blueGrey,
                     selectedColor: Colors.blueGrey,
                     children: {
@@ -55,7 +58,9 @@ class FilteredTodos extends StatelessWidget {
                               EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                           child: Text('Aktiva', style: TextStyle(fontSize: 14)))
                     },
-                    groupValue: activeFilter,
+                    groupValue: (BlocProvider.of<FilteredTodosBloc>(context)
+                            .state as FilteredTodosLoaded)
+                        .activeFilter,
                     onValueChanged: (filter) {
                       BlocProvider.of<FilteredTodosBloc>(context).add(
                           UpdateFilter(filter == VisibilityFilter.active
@@ -63,6 +68,24 @@ class FilteredTodos extends StatelessWidget {
                               : VisibilityFilter.inactive));
                     },
                   ),
+                  CupertinoButton(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Icon(CupertinoIcons.add),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
+                        builder: (context) {
+                          return AddEditScreen(
+                            onSave: (todo) {
+                              BlocProvider.of<TodosBloc>(context).add(
+                                AddTodo(todo),
+                              );
+                            },
+                            isEditing: false,
+                          );
+                        },
+                      ));
+                    }
+                      )
                 ]),
               ),
               SliverSafeArea(      // BEGINNING OF MAIN CONTENT

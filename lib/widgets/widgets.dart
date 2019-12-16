@@ -6,3 +6,4 @@ export 'delete_todo_snackbar.dart';
 export 'filtered_courses.dart';
 export 'todo_row_item.dart';
 export 'swipe_background.dart';
+export 'animated_loading_background.dart';
