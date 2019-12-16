@@ -12,6 +12,10 @@ class TodosBloc extends Bloc<TodoEvent, TodoState> {
 
   TodosBloc(this.canvasRepository);
 
+  Future<void> refresh() async {
+    _mapLoadTodosToState();
+  }
+
   @override
   TodoState get initialState => TodosLoading();
 

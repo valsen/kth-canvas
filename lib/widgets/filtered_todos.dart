@@ -88,6 +88,12 @@ class FilteredTodos extends StatelessWidget {
                       )
                 ]),
               ),
+              CupertinoSliverRefreshControl(
+                onRefresh: () async {
+                  BlocProvider.of<TodosBloc>(context).add(GetActiveTodos());
+                  return Future.delayed(Duration(seconds: 3));
+                }
+              ),
               SliverSafeArea(      // BEGINNING OF MAIN CONTENT
                top: false,
                minimum: const EdgeInsets.only(top: 8),

@@ -84,6 +84,12 @@ class FilteredCourses extends StatelessWidget {
                       )
                 ]),
               ),
+              CupertinoSliverRefreshControl(
+                onRefresh: () async {
+                  BlocProvider.of<TodosBloc>(context).add(GetActiveTodos());
+                  return Future.delayed(Duration(seconds: 3));
+                }
+              ),
               SliverSafeArea(
                 // BEGINNING OF NEW CONTENT
                 top: false,
