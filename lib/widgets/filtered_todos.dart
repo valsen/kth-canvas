@@ -4,14 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tutorial/screens/add_edit_screen.dart';
-import 'package:todos_app_core/todos_app_core.dart';
 
 import 'package:flutter_tutorial/data/models/models.dart';
 import 'package:flutter_tutorial/blocs/blocs.dart';
-import 'package:flutter_tutorial/flutter_todos_keys.dart';
 import 'package:flutter_tutorial/widgets/widgets.dart';
 
-import 'package:intl/intl.dart';
 import '../time_format.dart';
 
 
@@ -24,12 +21,7 @@ class FilteredTodos extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<FilteredTodosBloc, FilteredTodosState>(
       builder: (context, state) {
-        if (state is FilteredTodosLoading) {
-          return Center(
-              child:
-                  CircularProgressIndicator(key: ArchSampleKeys.todosLoading));
-        } else if (state is FilteredTodosLoaded) {
-          final todoList = state.filteredTodos;
+final todoList = (state as FilteredTodosLoaded).filteredTodos;
           final courseList = (BlocProvider.of<TodosBloc>(context).state as TodosLoaded).courseList;
           final VisibilityFilter activeFilter = 
             (BlocProvider.of<FilteredTodosBloc>(context)
@@ -113,17 +105,6 @@ class FilteredTodos extends StatelessWidget {
                                     active: activeFilter == VisibilityFilter.active
                                         ? false
                                         : true)));
-                            // Scaffold.of(context).showSnackBar(
-                            //   DeleteTodoSnackBar(
-                            //       todo: todo,
-                            //       onUndo: () => BlocProvider.of<TodosBloc>(context)
-                            //           .add(UpdateTodo(todo.copyWith(
-                            //               active: activeFilter ==
-                            //                       VisibilityFilter.active
-                            //                   ? true
-                            //                   : false))),
-                            //       key: Key(todo.id.toString())),
-                            // );
                         },
                         child: TodoRowItem(
                           index: index,
@@ -140,9 +121,6 @@ class FilteredTodos extends StatelessWidget {
              )
             ],
           );
-        } else {
-          return Container(key: FlutterTodosKeys.filteredTodosEmptyContainer);
-        }
       },
     );
   }

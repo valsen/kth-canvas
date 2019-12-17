@@ -87,6 +87,7 @@ class FilteredCourses extends StatelessWidget {
               CupertinoSliverRefreshControl(
                 onRefresh: () async {
                   BlocProvider.of<TodosBloc>(context).add(GetActiveTodos());
+                  // BlocProvider.of<TodosBloc>(context).
                   return Future.delayed(Duration(seconds: 3));
                 }
               ),
@@ -99,7 +100,6 @@ class FilteredCourses extends StatelessWidget {
                       if (index < courseList.length) {
                         CanvasCourse course = courseList[index];
                         return CourseCard(
-                          // index: index,
                           course: course,
                           assignments: todoList
                               .where((todo) => todo.courseId == course.id)
