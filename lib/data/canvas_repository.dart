@@ -21,7 +21,7 @@ abstract class CanvasRepository {
 
 class TodoRepository implements CanvasRepository {
   String token =
-      "8779~KzUQiD6KASsiotpodfWzwBu1xCI8nCbkNgUgRslXKQl5sI7o4IKQQFSVbGiPZc1E";
+      "YOUR CANVAS ACCESS TOKEN HERE";
 
   @override
   Future<List<UpcomingEvent>> fetchTodoList() async {
