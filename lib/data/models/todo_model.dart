@@ -16,7 +16,7 @@ class Todo {
 
   Todo copyWith(
       {int id,
-      String titile,
+      String title,
       String type,
       DateTime startAt,
       int courseId,
@@ -72,5 +72,10 @@ class Todo {
   @override
   List<Object> get props => [
         id,
+        title,
+        type,
+        startAt,
+        courseId,
+        active,
       ];
 }

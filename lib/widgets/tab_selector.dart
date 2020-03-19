@@ -31,7 +31,7 @@ class TabSelector extends StatelessWidget {
           ),
           title: Text(tab == AppTab.courses
               ? "Kurser"
-              : "Att göra"),
+              : "Kommande"),
         );
       }).toList(),
     );

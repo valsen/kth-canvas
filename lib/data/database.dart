@@ -17,7 +17,7 @@ class DBProvider {
   }
 
   initDB() async {
-    // await DBProvider.db.deleteLocalDatabase();
+    await DBProvider.db.deleteLocalDatabase();
     print("initializing Database");
     var documentsDirectory = await getDatabasesPath();
     String path = join(documentsDirectory, "todo.db");

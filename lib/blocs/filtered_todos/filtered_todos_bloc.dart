@@ -53,10 +53,14 @@ class FilteredTodosBloc extends Bloc<FilteredTodosEvent, FilteredTodosState> {
   List<Todo> _mapTodosToFilteredTodos(
       List<Todo> todos, VisibilityFilter filter) {
     final List<Todo> filtered = todos.where((todo) {
-      if (filter == VisibilityFilter.inactive) {
-        return !todo.active;
+      if (todo.startAt.isAfter(DateTime.now())) {
+        if (filter == VisibilityFilter.inactive) {
+          return !todo.active;
+        } else {
+          return todo.active;
+        }
       } else {
-        return todo.active;
+        return false;
       }
     }).toList();
     filtered.sort((a, b) => a.startAt.compareTo(b.startAt));
@@ -66,7 +70,7 @@ class FilteredTodosBloc extends Bloc<FilteredTodosEvent, FilteredTodosState> {
   Stream<FilteredTodosState> _mapUpdateTodosToState(UpdateTodos event) async* {
     final visibilityFilter = state is FilteredTodosLoaded
         ? (state as FilteredTodosLoaded).activeFilter
-        : VisibilityFilter.active; //should be all!
+        : VisibilityFilter.active;
     yield FilteredTodosLoaded(
       _mapTodosToFilteredTodos(
         (todosBloc.state as TodosLoaded).todoList,
